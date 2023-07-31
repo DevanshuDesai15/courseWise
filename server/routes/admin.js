@@ -55,9 +55,10 @@ router.get('/courses', authenticateAdmin, async (req, res) => {
     res.json({ courses });
   });
 
-router.get('/admin/profile', authenticateAdmin, (req, res) => {
+router.get('/profile', authenticateAdmin, async (req, res) => {
+  const admin = await Admin.findOne({ username: req.user.username});
     res.json({
-      username: req.user.username
+      username: admin.username
     })
   })
 
