@@ -1,5 +1,6 @@
 import React from "react";
 import { Typography, TextField, Button, Card } from "@mui/material";
+import axios from "axios";
 
 /// File is incomplete. You need to add input boxes to take input for users to login.
 function Login() {
@@ -17,21 +18,18 @@ function Login() {
                 <br />
                 <TextField fullWidth={true} variant="outlined" label="Password" type={"password"} onChange={e => setPassword(e.target.value)} />
                 <br /> <br />
-                <Button variant="contained" onClick={() => {
-                        fetch('http://localhost:3000/admin/login', {
-                            method: "POST",
-                            body: JSON.stringify({
-                                username,
-                                password
-                            }),
+                <Button variant="contained" onClick={ async () => {
+                        const res = await axios.post('http://localhost:3000/admin/login', {
+                            username,
+                            password
+                        }, {
                             headers: {
                                 "Content-type": "application/json"
                             }
-                        }).then((res) => {
-                            res.json().then((data) => {
-                                localStorage.setItem("token", data.token);
-                            })
                         })
+                        let data = res.data;
+                        localStorage.setItem("token", data.token);
+                        window.location = "/"
                     }}>Sign In</Button>
             </div>
             <div>

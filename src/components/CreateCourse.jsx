@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Typography, TextField, Button, Card } from "@mui/material";
+import { Typography, TextField, Button, Card, Checkbox, FormControlLabel  } from "@mui/material";
+import axios from "axios";
 /// You need to add input boxes to take input for users to create a course.
 /// I've added one input so you understand the api to do it.
 function CreateCourse() {
@@ -8,7 +9,7 @@ function CreateCourse() {
     const [description, setDescription] = React.useState("");
     const [price, setPrice] = React.useState("");
     const [image, setImage] = useState("");
-    const [published, setPublished] = useState(false);
+    const [published, setPublished] = useState(true);
 
     const navigate = useNavigate();
 
@@ -27,29 +28,23 @@ function CreateCourse() {
                     <br /> <br />
                     <TextField fullWidth={true} variant="outlined" label="Image Link" type={"url"} onChange={e => setImage(e.target.value)}/>
                     <br /> <br />
-                    <TextField fullWidth={true} variant="outlined" label="Published" type={""} onChange={e => setPublished(e.target.value)}/>
+                    <FormControlLabel label="Publish" control={<Checkbox checked={published} onChange={e => setPublished(e.target.value)}/>} /> 
                     <br /> <br />
                     <div style={{display:'flex', justifyContent:'space-between'}}>
-                        <Button variant="contained" onClick={() => {
-                            fetch('http://localhost:3000/admin/courses', {
-                                method: "POST",
-                                body: JSON.stringify({
-                                    title,
-                                    description,
-                                    price,
-                                    image,
-                                    published
-                                }),
+                        <Button variant="contained" onClick={ async () => {
+                            await axios.post("http://localhost:3000/admin/courses", {
+                                title,
+                                description,
+                                price,
+                                image,
+                                published
+                            }, {
                                 headers: {
-                                    "Content-type": "application/json",
+                                    "Content-Type": "application/json",
                                     "Authorization": "Bearer " + localStorage.getItem("token")
                                 }
-                            }).then((res) => {
-                                res.json().then((data) => {
-                                    alert("Course Added")
-                                    console.log(data);
-                                })
-                            })
+                            });
+                            alert("Added Course!")
                         }}>
                             Upload
                         </Button>
