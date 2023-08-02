@@ -1,4 +1,5 @@
-import { Box, AppBar, Toolbar, Typography, Button  } from '@mui/material';
+import { Box, AppBar, Toolbar, Typography, Button, IconButton, Menu, MenuItem } from '@mui/material';
+import AccountCircle from '@mui/icons-material/AccountCircle';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -7,6 +8,7 @@ export default function Header() {
 
   const [username, setUsername] = useState("");
   const [loggedIn, setLoggedIn] = useState(null);
+  const [anchorEl, setAnchorEl] = useState(null);
 
   useEffect(()=>{
     fetch('http://localhost:3000/admin/profile', { headers: {"Authorization": "Bearer " + localStorage.getItem("token")}})
@@ -21,6 +23,10 @@ export default function Header() {
     })
   }, []);
 
+  const handleMenu = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
   const handleLogin = () => {
     navigate('/login');
   }
@@ -29,10 +35,15 @@ export default function Header() {
     navigate('/register');
   }
 
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
   const handleLogout = () => {
     localStorage.setItem("token", null);
     setLoggedIn(false);
     setUsername('');
+    navigate('/login');
   }
 
     return (
@@ -41,7 +52,7 @@ export default function Header() {
         <Toolbar>
           {loggedIn ? (
             <Typography variant='h6' component="div" sx={{ flexGrow: 1 }} onClick={() => {
-              navigate("/")
+              navigate("/");
             }}>
               CourseWise
             </Typography>
@@ -50,8 +61,45 @@ export default function Header() {
           )}
           {loggedIn ? (
             <>
-              <Typography variant="subtitle1" component="span" sx={{ marginRight: '1rem' }}> {username} </Typography>
-              <Button color='inherit' onClick={handleLogout}>Logout</Button>
+              <Button color="inherit" onClick={() => {
+                navigate("/createcourse")
+              }}>
+                Add Courses
+              </Button>
+              <Button color="inherit" onClick={() => {
+                navigate("/courses");
+              }}>
+                Courses
+              </Button>
+              <IconButton
+                size="large"
+                aria-label="account of current user"
+                aria-controls="menu-appbar"
+                aria-haspopup="true"
+                onClick={handleMenu}
+                color="inherit"
+              >
+                <AccountCircle />
+              </IconButton>
+              <Menu
+                sx={{ mt: '35px' }}
+                id="menu-appbar"
+                anchorEl={anchorEl}
+                anchorOrigin={{
+                  vertical: 'top',
+                  horizontal: 'right',
+                }}
+                keepMounted
+                transformOrigin={{
+                  vertical: 'top',
+                  horizontal: 'right',
+                }}
+                open={Boolean(anchorEl)}
+                onClose={handleClose}
+              >
+                <MenuItem>{username}</MenuItem>
+                <MenuItem onClick={handleLogout}>Logout</MenuItem>
+              </Menu>
             </>
           ) : (
             <> 
