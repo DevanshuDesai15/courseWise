@@ -1,8 +1,9 @@
 /* eslint-disable react/prop-types */
 /* eslint-disable react/jsx-key */
 import React, { useEffect } from "react";
-import { Card, Grid, Box, CardContent, CardMedia, Typography, Button } from '@mui/material';
+import { Card, Grid, Box, CardContent, CardMedia, Typography, Button, CardActions } from '@mui/material';
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 function ShowCourses() {
     const [courses, setCourses] = React.useState([]);
@@ -10,24 +11,25 @@ function ShowCourses() {
     // Add code to fetch courses from the server
     // and set it in the courses state variable.
 
+    const init = async () => {
+        const res = await axios.get('http://localhost:3000/admin/courses/', {
+            headers: {
+                "Authorization": "Bearer " + localStorage.getItem("token")
+            }
+        })
+        setCourses(res.data.courses)
+    }
+    
     useEffect(() => {
-        fetch('http://localhost:3000/admin/courses/', {
-                                headers: {
-                                    "Authorization": "Bearer " + localStorage.getItem("token")
-                                }
-                            }).then((res) => {
-                                res.json().then((data) => {
-                                    setCourses(data.courses);
-                                })
-                            })
+        init();
     }, [])
 
     return (
         <div>
-            <Box display="flex" justifyContent="center" alignItems="center" minHeight="100vh">
+            <Box display="flex" justifyContent="center" flexWrap="wrap" minHeight="100vh">
                 <Box maxWidth={800}>
                     <Typography variant="h4" component="h4" align="center" gutterBottom> Courses </Typography>
-                    <Grid container spacing={2} justifyContent="center">
+                    <Grid container spacing={4} justifyContent="center">
                         {courses?.map((course) => (
                         <Grid item xs={12} sm={6} md={4} key={course.title}>
                         <Course course={course} />
@@ -60,7 +62,9 @@ function Course({ course }) {
 			<Typography variant="body2" color="text.secondary"> {description} </Typography>
 			<Typography variant="body2" color="text.secondary"> Price: {price} </Typography>
 			<Typography variant="body2" color="text.secondary"> Published: {published ? "Yes" : "No"} </Typography>
-            <Button variant="contained" onClick={handleEdit}>Edit</Button>
+            <CardActions>
+                <Button size="small" variant="contained" onClick={handleEdit}>Edit</Button>
+            </CardActions>
 		</CardContent>
 	</Card>
     )
