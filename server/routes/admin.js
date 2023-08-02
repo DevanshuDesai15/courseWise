@@ -48,6 +48,17 @@ router.put('/courses/:courseId', authenticateAdmin, async (req, res) => {
       res.status(404).json({ message: "Course not found" });
     }
   });
+
+router.get('/courses/:courseId', authenticateAdmin, async (req, res) => {
+    // logic to get a course from it's id
+    const courseId = req.params.courseId;
+    const course = await Course.findById(courseId);
+    if (course) {
+      res.json({ course });
+    } else {
+      res.status(404).json({ message: "Course not found" });
+    }
+  });
   
 router.get('/courses', authenticateAdmin, async (req, res) => {
     // logic to get all courses
