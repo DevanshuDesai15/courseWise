@@ -9,7 +9,7 @@ function CreateCourse() {
     const [description, setDescription] = React.useState("");
     const [price, setPrice] = React.useState("");
     const [image, setImage] = useState("");
-    const [published, setPublished] = useState(true);
+    const [checked, setChecked] = useState(true);
 
     const navigate = useNavigate();
 
@@ -28,7 +28,7 @@ function CreateCourse() {
                     <br /> <br />
                     <TextField fullWidth={true} variant="outlined" label="Image Link" type={"url"} onChange={e => setImage(e.target.value)}/>
                     <br /> <br />
-                    <FormControlLabel label="Publish" control={<Checkbox checked={published} onChange={e => setPublished(e.target.value)}/>} /> 
+                    <FormControlLabel label="Publish" control={<Checkbox checked={checked} onChange={e => setChecked(e.target.checked)}/>} inputProps={{ 'aria-label': 'controlled' }}/> 
                     <br /> <br />
                     <div style={{display:'flex', justifyContent:'space-between'}}>
                         <Button variant="contained" onClick={ async () => {
@@ -36,8 +36,8 @@ function CreateCourse() {
                                 title,
                                 description,
                                 price,
-                                image,
-                                published
+                                imageLink: image,
+                                published: checked
                             }, {
                                 headers: {
                                     "Content-Type": "application/json",
