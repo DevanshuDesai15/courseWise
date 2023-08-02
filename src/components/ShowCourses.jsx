@@ -41,18 +41,18 @@ function ShowCourses() {
 }
 
 function Course({ course }) {
-    const { title, description, price, image, published} = course ;
+    const { _id, title, description, price, imageLink, published} = course ;
     const navigate = useNavigate();
 
     const handleEdit = () => {
-        navigate("/course/:courseId");
+        navigate("/course/"+ _id);
     }
 
     return(
         <Card sx={{ maxWidth: 345 }}>
 		<CardMedia
 		sx={{ height: 140 }}
-		image={image}
+		image={imageLink}
 		title={title}
 		/>
 		<CardContent>
