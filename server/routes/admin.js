@@ -69,8 +69,20 @@ router.get('/courses', authenticateAdmin, async (req, res) => {
 router.get('/profile', authenticateAdmin, async (req, res) => {
   const admin = await Admin.findOne({ username: req.user.username});
     res.json({
-      username: admin.username
+      username: admin.username,
+      profileId: admin.id
     })
   })
+
+  router.get('/profile/:profileId', authenticateAdmin, async (req, res) => {
+    // logic to get a profile from it's id
+    const profileId = req.params.profileId;
+    const admin = await Admin.findById(profileId);
+    if (admin) {
+      res.json({ admin });
+    } else {
+      res.status(404).json({ message: "Admin not found" });
+    }
+  });
 
 module.exports = router;

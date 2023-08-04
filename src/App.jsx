@@ -4,6 +4,7 @@ import Landing from "./components/Landing";
 import CreateCourse from './components/CreateCourse';
 import Register from './components/Register';
 import ShowCourses from './components/ShowCourses';
+import Profile from './components/Profile';
 import { createTheme, ThemeProvider} from '@mui/material/styles';
 import Header from './sub-components/Header';
 import Course from './components/Course';
@@ -29,6 +30,7 @@ function App() {
                         <Route path="/createcourse" element={<CreateCourse />} />
                         <Route path="/courses" element={<ShowCourses />} />
                         <Route path="/course/:courseId" element={<Course />} />
+                        <Route path="/profile/:profileId" element={<Profile />} />
                     </Routes>
                 </Router>
             </RecoilRoot>
