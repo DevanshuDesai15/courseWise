@@ -28,7 +28,7 @@ app.use("/admin", adminRouter);
 app.use("/user", userRouter);
 
 // Connect to the MongoDB server
-mongoose.connect('mongodb+srv://ddesai21:Devanshu15@cluster0.xuryuj3.mongodb.net/courses', { useNewUrlParser: true, useUnifiedTopology: true});
+mongoose.connect('mongodb://127.0.0.1/courses', { useNewUrlParser: true, useUnifiedTopology: true, dbName: "courses"});
 
 app.listen(3000, () => console.log("Server running on port 3000"));
 
