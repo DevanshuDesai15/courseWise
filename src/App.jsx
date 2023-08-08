@@ -8,7 +8,11 @@ import Profile from './components/Profile';
 import { createTheme, ThemeProvider} from '@mui/material/styles';
 import Header from './sub-components/Header';
 import Course from './components/Course';
-import { RecoilRoot } from 'recoil';
+import { RecoilRoot, useSetRecoilState } from 'recoil';
+import { userState } from './store/atoms/user';
+import axios from 'axios';
+import { BASE_URL } from './config';
+import { useEffect } from 'react';
 
 
 const theme = createTheme({
@@ -23,6 +27,7 @@ function App() {
             <RecoilRoot>
                 <Router>
                     <Header/>
+                    <InitUser />
                     <Routes>
                         <Route path="/" element={<Landing />} />
                         <Route path="/login" element={<Login />} />
@@ -36,6 +41,44 @@ function App() {
             </RecoilRoot>
         </ThemeProvider>
     );
+}
+
+// this function will get the username from the backend and pass through out the app
+function InitUser() {
+    const setUser = useSetRecoilState(userState);
+
+    const init = async() => {
+        try {
+            const resp = await axios.get(`${BASE_URL}/admin/profile`, {
+                headers: {
+                    "Authorization": "Bearer " + localStorage.getItem("token")
+                }
+            })
+
+            if(resp.data.username) {
+                setUser({
+                    isLoading: false,
+                    username: resp.data.username
+                })
+            } else {
+                setUser({
+                    isLoading: false,
+                    username: null
+                })
+            }
+        } catch(e) {
+            setUser({
+                isLoading: false,
+                username: null
+            })
+        }
+    };
+
+    useEffect(() => {
+        init();
+    }, []);
+
+    return <></>
 }
 
 export default App;
