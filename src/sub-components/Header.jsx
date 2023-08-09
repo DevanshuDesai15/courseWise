@@ -1,26 +1,18 @@
+import { useState } from 'react';
 import { Box, AppBar, Toolbar, Typography, Button, IconButton, Menu, MenuItem, Avatar } from '@mui/material';
-import { useEffect, useState } from 'react';
+import { userLoadingState } from '../store/selectors/isUserLoading';
 import { useNavigate } from 'react-router-dom';
+import { useRecoilState, useRecoilValue } from 'recoil';
+import { userNameState } from '../store/selectors/userName';
+import { userState } from '../store/atoms/user';
 
 export default function Header() {
   const navigate = useNavigate();
 
-  const [username, setUsername] = useState("");
-  const [loggedIn, setLoggedIn] = useState(null);
+  const userLoading = useRecoilValue(userLoadingState);
+  const userName = useRecoilValue(userNameState);
+  const setUser = useRecoilState(userState);
   const [anchorEl, setAnchorEl] = useState(null);
-
-  useEffect(()=>{
-    fetch('http://localhost:3000/admin/profile', { headers: {"Authorization": "Bearer " + localStorage.getItem("token")}})
-    .then(res => res.json())
-    .then(data => {
-      setUsername(data.username);
-      setLoggedIn(true);
-    })
-    .catch(error => {
-      console.error('Error fetching username', error);
-      setLoggedIn(false);
-    })
-  }, []);
 
   const handleMenu = (event) => {
     setAnchorEl(event.currentTarget);
@@ -40,74 +32,85 @@ export default function Header() {
 
   const handleLogout = () => {
     localStorage.setItem("token", null);
-    setLoggedIn(false);
-    setUsername('');
+    setUser({
+      isLoading: false,
+      userName: null
+    })
     navigate('/login');
   }
 
+  if (userLoading) {
+    return <></>
+  }
+
+  if(userName){
     return (
       <Box>
         <AppBar position="static">
         <Toolbar>
-          {loggedIn ? (
             <Typography variant='h6' component="div" sx={{ flexGrow: 1 }} onClick={() => {
               navigate("/");
             }}>
               CourseWise
             </Typography>
-          ):(
-            <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>CourseWise</Typography>
-          )}
-          {loggedIn ? (
-            <>
-              <Button color="inherit" onClick={() => {
-                navigate("/createcourse")
-              }}>
-                Add Courses
-              </Button>
-              <Button color="inherit" onClick={() => {
-                navigate("/courses");
-              }}>
-                Courses
-              </Button>
-              <IconButton
-                size="large"
-                aria-label="account of current user"
-                aria-controls="menu-appbar"
-                aria-haspopup="true"
-                onClick={handleMenu}
-                color="inherit"
-              >
-                <Avatar alt="Remy Sharp" src="https://image.winudf.com/v2/image1/bmV0LndsbHBwci5ib3lzX3Byb2ZpbGVfcGljdHVyZXNfc2NyZWVuXzBfMTY2NzUzNzYxN18wOTk/screen-0.webp?fakeurl=1&type=.webp" />
-              </IconButton>
-              <Menu
-                sx={{ mt: '35px' }}
-                id="menu-appbar"
-                anchorEl={anchorEl}
-                anchorOrigin={{
-                  vertical: 'top',
-                  horizontal: 'right',
-                }}
-                keepMounted
-                transformOrigin={{
-                  vertical: 'top',
-                  horizontal: 'right',
-                }}
-                open={Boolean(anchorEl)}
-                onClose={handleClose}
-              >
-                <MenuItem>{username}</MenuItem>
-                <MenuItem onClick={handleLogout}>Logout</MenuItem>
-              </Menu>
-            </>
-          ) : (
-            <> 
-              <Button color="inherit" onClick={handleSignup}>Register</Button>
-              <Button color="inherit" onClick={handleLogin}>Login</Button>
-              </>
-          )}
-        </Toolbar>
+            <Button color="inherit" onClick={() => {
+              navigate("/createcourse")
+            }}>
+              Add Courses
+            </Button>
+            <Button color="inherit" onClick={() => {
+              navigate("/courses");
+            }}>
+              Courses
+            </Button>
+            <IconButton
+              size="large"
+              aria-label="account of current user"
+              aria-controls="menu-appbar"
+              aria-haspopup="true"
+              onClick={handleMenu}
+              color="inherit"
+            >
+              <Avatar alt="Remy Sharp" src="https://image.winudf.com/v2/image1/bmV0LndsbHBwci5ib3lzX3Byb2ZpbGVfcGljdHVyZXNfc2NyZWVuXzBfMTY2NzUzNzYxN18wOTk/screen-0.webp?fakeurl=1&type=.webp" />
+            </IconButton>
+            <Menu
+              sx={{ mt: '35px' }}
+              id="menu-appbar"
+              anchorEl={anchorEl}
+              anchorOrigin={{
+                vertical: 'top',
+                horizontal: 'right',
+              }}
+              keepMounted
+              transformOrigin={{
+                vertical: 'top',
+                horizontal: 'right',
+              }}
+              open={Boolean(anchorEl)}
+              onClose={handleClose}
+            >
+              <MenuItem>{userName}</MenuItem>
+              <MenuItem onClick={handleLogout}>Logout</MenuItem>
+            </Menu>
+            </Toolbar>
       </AppBar>
       </Box>
     )
+  } else {
+    return (
+      <Box>
+        <AppBar position="static">
+        <Toolbar>
+          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>CourseWise</Typography>
+          <> 
+            <Button color="inherit" onClick={handleSignup}>Register</Button>
+            <Button color="inherit" onClick={handleLogin}>Login</Button>
+          </>
+        </Toolbar>
+        </AppBar>
+      </Box>
+    )
+  }
+
+    
 }
