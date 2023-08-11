@@ -1,11 +1,18 @@
 import React from "react";
 import { Typography, TextField, Button, Card } from "@mui/material";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import { useRecoilState } from "recoil";
+import { userState } from "../store/atoms/user";
+import { BASE_URL } from "../config";
 
 /// File is incomplete. You need to add input boxes to take input for users to register.
 function Register() {
     const [username, setUsername] = React.useState("");
     const [password, setPassword] = React.useState("");
+
+    const navigate = useNavigate();
+    const setUser = useRecoilState(userState);
 
     return <div>
         
@@ -20,15 +27,20 @@ function Register() {
                     <TextField fullWidth={true} variant="outlined" label="Password" type={"password"} onChange={e => setPassword(e.target.value)} />
                     <br /> <br />
                     <Button variant="contained" onClick={ async () => {
-                        const response = await axios.post("http://localhost:3000/admin/signup", {
+                        const response = await axios.post(`${BASE_URL}/admin/signup`, {
                             username,
                             password
                         })
                         let data = response.data;
                         localStorage.setItem("token", data.token);
-                        window.location = "/courses"
+                        setUser({
+                            username: username,
+                            isLoading: false
+                        });
+                        // window.location = "/courses"
+                        navigate("/courses");
                     }}>
-                        Sign In
+                        Sign Up
                     </Button>
                 </div>
                 <div>
