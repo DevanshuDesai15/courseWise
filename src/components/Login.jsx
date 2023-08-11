@@ -2,7 +2,7 @@ import React from "react";
 import { Typography, TextField, Button, Card } from "@mui/material";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { useRecoilState } from "recoil";
+import { useSetRecoilState } from "recoil";
 import { userState } from "../store/atoms/user";
 import { BASE_URL } from "../config";
 
@@ -12,7 +12,7 @@ function Login() {
     const [password, setPassword] = React.useState("");
 
     const navigate = useNavigate();
-    const setUser = useRecoilState(userState);
+    const setUser = useSetRecoilState(userState);
 
     return <div>
     <center style={{marginTop: 150}}>
@@ -38,8 +38,8 @@ function Login() {
                         localStorage.setItem("token", data.token);
                         // window.location = "/"
                         setUser({
-                            username: username,
-                            isLoading: false
+                            isLoading: false,
+                            username: username
                         })
                         navigate("/courses")
                     }}>Sign In</Button>

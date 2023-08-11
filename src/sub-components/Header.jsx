@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Box, AppBar, Toolbar, Typography, Button, IconButton, Menu, MenuItem, Avatar } from '@mui/material';
 import { userLoadingState } from '../store/selectors/isUserLoading';
 import { useNavigate } from 'react-router-dom';
-import { useRecoilState, useRecoilValue } from 'recoil';
+import { useSetRecoilState, useRecoilValue } from 'recoil';
 import { userNameState } from '../store/selectors/userName';
 import { userState } from '../store/atoms/user';
 
@@ -11,7 +11,7 @@ export default function Header() {
 
   const userLoading = useRecoilValue(userLoadingState);
   const userName = useRecoilValue(userNameState);
-  const setUser = useRecoilState(userState);
+  const setUser = useSetRecoilState(userState);
   const [anchorEl, setAnchorEl] = useState(null);
 
   const handleMenu = (event) => {
@@ -34,7 +34,7 @@ export default function Header() {
     localStorage.setItem("token", null);
     setUser({
       isLoading: false,
-      userName: null
+      username: null
     })
     navigate('/login');
   }
