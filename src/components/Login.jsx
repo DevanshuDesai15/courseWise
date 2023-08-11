@@ -1,11 +1,18 @@
 import React from "react";
 import { Typography, TextField, Button, Card } from "@mui/material";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import { useRecoilState } from "recoil";
+import { userState } from "../store/atoms/user";
+import { BASE_URL } from "../config";
 
 /// File is incomplete. You need to add input boxes to take input for users to login.
 function Login() {
     const [username, setUsername] = React.useState("");
     const [password, setPassword] = React.useState("");
+
+    const navigate = useNavigate();
+    const setUser = useRecoilState(userState);
 
     return <div>
     <center style={{marginTop: 150}}>
@@ -19,7 +26,7 @@ function Login() {
                 <TextField fullWidth={true} variant="outlined" label="Password" type={"password"} onChange={e => setPassword(e.target.value)} />
                 <br /> <br />
                 <Button variant="contained" onClick={ async () => {
-                        const res = await axios.post('http://localhost:3000/admin/login', {
+                        const res = await axios.post(`${BASE_URL}/admin/login`, {
                             username,
                             password
                         }, {
@@ -29,7 +36,12 @@ function Login() {
                         })
                         let data = res.data;
                         localStorage.setItem("token", data.token);
-                        window.location = "/"
+                        // window.location = "/"
+                        setUser({
+                            username: username,
+                            isLoading: false
+                        })
+                        navigate("/courses")
                     }}>Sign In</Button>
             </div>
             <div>
