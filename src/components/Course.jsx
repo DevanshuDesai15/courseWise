@@ -4,10 +4,14 @@ import { useParams } from "react-router-dom";
 import ReactLoading from 'react-loading';
 import { Card, Grid, CardMedia, CardContent, Typography, TextField, Button, FormControlLabel, Checkbox } from "@mui/material";
 import axios from "axios";
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
+import { courseState } from "../store/atoms/course";
+import { courseImage, coursePrice, courseTitle, isCourseLoading } from "../store/selectors/course";
 
 function Course () {
     let { courseId } = useParams();
-    const [course, setCourse] = useState(null);
+    const setCourse = useSetRecoilState(courseState);
+    const courseLoading = useRecoilValue(isCourseLoading);
 
     useEffect(() => {
         axios.get(`http://localhost:3000/admin/courses/${courseId}`, {
@@ -16,11 +20,14 @@ function Course () {
                 "Authorization": "Bearer " + localStorage.getItem("token")
             }
         }).then((res) => {
-            setCourse(res.data.course);
+            setCourse({isLoading: false, course: res.data.course});
+        })
+        .catch(() => {
+            setCourse({ isLoading: false, course: null});
         });
-    }, [])
+    }, []);
 
-    if(!course) {
+    if(!courseLoading) {
         return (
             <div style={{ display: 'flex', justifyContent: "center", marginTop:150}}>
                 <ReactLoading type="spin" color="#1c8fed"/>
@@ -30,20 +37,21 @@ function Course () {
 
     return (
         <>
-            <EditTopper title={course.title}/>
+            <EditTopper />
             <Grid container>
                 <Grid item lg={8} md={12} sm={12}>
-                    <UpdateCard course = {course} setCourse = {setCourse} />
+                    <UpdateCard />
                 </Grid>
                 <Grid item lg={4} md={12} sm={12}>
-                    <CourseCard course = {course}/>
+                    <CourseCard />
                 </Grid>
             </Grid>
         </>
     )
 }
 
-function EditTopper({ title }) {
+function EditTopper() {
+    const title = useRecoilValue(courseTitle);
     return (
         <div style={{height: 250, background:"#04068d", top: 0, width: "100vw", zIndex: 0, marginBottom: -250}}>
             <div style={{ height: 250, display: "flex", justifyContent:"center", flexDirection: "column"}}>
@@ -55,8 +63,10 @@ function EditTopper({ title }) {
     )
 }
 
-function CourseCard({ course }) {
-    const { title, description, price, imageLink, published} = course ;
+function CourseCard() {
+    const title = useRecoilValue(courseTitle);
+    const price = useRecoilValue(coursePrice);
+    const imageLink = useRecoilValue(courseImage);
     return (
         <div style={{ display: 'flex', justifyContent: "center", marginTop:80}}>
             <Card sx={{ width: 345 }}>
@@ -67,21 +77,23 @@ function CourseCard({ course }) {
                 />
                 <CardContent>
                     <Typography gutterBottom variant="h5" component="div"> {title} </Typography>
-                    <Typography variant="body2" color="text.secondary"> {description} </Typography>
+                    {/* <Typography variant="body2" color="text.secondary"> {description} </Typography> */}
                     <Typography variant="body2" color="text.secondary"> Price: {price} </Typography>
-                    <Typography variant="body2" color="text.secondary"> Published: {published ? "Yes" : "No"} </Typography>
+                    {/* <Typography variant="body2" color="text.secondary"> Published: {published ? "Yes" : "No"} </Typography> */}
                 </CardContent>
             </Card>
         </div>
     )
 }
 
-function UpdateCard({course, setCourse}) {
-    const [title, setTitle] = useState(course.title);
-    const [description, setDescription] = useState(course.description);
-    const [price, setPrice] = useState(course.price);
-    const [image, setImage] = useState(course.imageLink);
-    const [checked, setChecked] = useState(course.published);
+function UpdateCard() {
+    const [courseDetails, setCourse] = useRecoilState(courseState);
+    
+    const [title, setTitle] = useState(courseDetails.course.title);
+    const [description, setDescription] = useState(courseDetails.course.description);
+    const [price, setPrice] = useState(courseDetails.course.price);
+    const [image, setImage] = useState(courseDetails.course.imageLink);
+    const [checked, setChecked] = useState(courseDetails.course.published);
 
     return (
         <div style={{ display: 'flex', justifyContent: "center"}}>
@@ -99,7 +111,7 @@ function UpdateCard({course, setCourse}) {
                     <br /> <br />
                     <div style={{display:'flex', justifyContent:'space-between'}}>
                         <Button variant="contained" onClick={ async () => {
-                            axios.put("http://localhost:3000/admin/courses/" + course._id, {
+                            axios.put("http://localhost:3000/admin/courses/" + courseDetails.course._id, {
                                     title,
                                     description,
                                     price,
@@ -112,14 +124,14 @@ function UpdateCard({course, setCourse}) {
                                 }
                             })
                             let UpdateCourse = {
-                                _id: course._id,
+                                _id: courseDetails.course._id,
                                 title: title,
                                 description: description,
                                 imageLink: image,
                                 price,
                                 published: checked
                             };
-                            setCourse(UpdateCourse);
+                            setCourse({ course: UpdateCourse, isLoading: false});
                         }}>
                             Update
                         </Button>
