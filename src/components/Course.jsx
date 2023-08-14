@@ -1,12 +1,12 @@
 /* eslint-disable react/prop-types */
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import ReactLoading from 'react-loading';
 import { Card, Grid, CardMedia, CardContent, Typography, TextField, Button, FormControlLabel, Checkbox } from "@mui/material";
 import axios from "axios";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import { courseState } from "../store/atoms/course";
 import { courseImage, coursePrice, courseTitle, isCourseLoading } from "../store/selectors/course";
+import Loading from "../sub-components/Loading";
 
 function Course () {
     let { courseId } = useParams();
@@ -29,9 +29,7 @@ function Course () {
 
     if(courseLoading) {
         return (
-            <div style={{ display: 'flex', justifyContent: "center", marginTop:150}}>
-                <ReactLoading type="spin" color="#1c8fed"/>
-            </div>
+            <Loading />
         )
     }
 
