@@ -27,7 +27,7 @@ function Course () {
         });
     }, []);
 
-    if(!courseLoading) {
+    if(courseLoading) {
         return (
             <div style={{ display: 'flex', justifyContent: "center", marginTop:150}}>
                 <ReactLoading type="spin" color="#1c8fed"/>
@@ -88,7 +88,7 @@ function CourseCard() {
 
 function UpdateCard() {
     const [courseDetails, setCourse] = useRecoilState(courseState);
-    
+
     const [title, setTitle] = useState(courseDetails.course.title);
     const [description, setDescription] = useState(courseDetails.course.description);
     const [price, setPrice] = useState(courseDetails.course.price);
